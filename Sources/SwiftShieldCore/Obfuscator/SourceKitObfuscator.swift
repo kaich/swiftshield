@@ -91,6 +91,20 @@ extension SourceKitObfuscator {
             return
         }
         
+        if kind == .enum, let usr: String = dict[keys.usr] {
+            let codingKeysUSR: Set<String> = ["s:s9CodingKeyP"]
+            if try inheritsFromAnyUSR(
+                usr,
+                anyOf: codingKeysUSR,
+                inModule: module
+            ) {
+                logger.log("* Ignoring \(name) (USR: \(usr)) because its inherits from CodingKey.", verbose: true)
+                return
+            } else {
+                logger.log("Info: Proceeding with \(name) (USR: \(usr)) because its does not appear to inherit from CodingKey.)", verbose: true)
+            }
+        }
+
         if kind == .enumelement, let parentUSR: String = dict.parent[keys.usr] {
             let codingKeysUSR: Set<String> = ["s:s9CodingKeyP"]
             if try inheritsFromAnyUSR(
