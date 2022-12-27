@@ -136,7 +136,7 @@ struct SchemeInfoProvider: SchemeInfoProviderProtocol {
             args[indexOfOutputMap] = nil
             args[indexOfOutputMap + 1] = nil
         }
-        let forbiddenArgs = ["-parseable-output", "-incremental", "-serialize-diagnostics", "-emit-dependencies", "-enforce-exclusivity\\=checked"]
+        let forbiddenArgs = ["-parseable-output", "-incremental", "-serialize-diagnostics", "-emit-dependencies", "-enforce-exclusivity\\=checked", "-use-frontend-parseable-output"]
         for (index, arg) in args.enumerated() {
             if forbiddenArgs.contains(arg ?? "") {
                 args[index] = nil
