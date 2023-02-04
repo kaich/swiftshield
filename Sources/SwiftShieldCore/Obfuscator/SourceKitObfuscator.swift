@@ -139,7 +139,29 @@ extension SourceKitObfuscator {
                 logger.log("Info: Proceeding with \(name) (USR: \(usr)) because its parent does not appear to inherit from Codable.)", verbose: true)
             }
         }
-
+        
+        if let related: SKResponseArray = dict[keys.related], related.count > 0, related[0][keys.name] == "NSManagedObject" {
+            logger.log("* Ignoring \(name) (USR: \(usr)) because its Core Data entity.", verbose: true)
+            return
+        }
+        
+        if let attributes: SKResponseArray = dict[keys.attributes] {
+            var isFound = false
+            
+            for i in 0 ..< attributes.count {
+                if let attr: SKUID = attributes[i][keys.attribute], attr.description == "source.decl.attribute.NSManaged" {
+                    isFound = true
+                    break
+                }
+            }
+            
+            if isFound {
+                logger.log("* Ignoring \(name) (USR: \(usr)) because its Core Data entity attribute.", verbose: true)
+                return
+            }
+        }
+        
+//        logger.log("* Found declaration of \(name) (USR: \(usr)), dict \(dict.description ?? "")")
         logger.log("* Found declaration of \(name) (USR: \(usr))")
         dataStore.processedUsrs.insert(usr)
 
