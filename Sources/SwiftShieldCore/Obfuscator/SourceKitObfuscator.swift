@@ -7,15 +7,17 @@ final class SourceKitObfuscator: ObfuscatorProtocol {
     let ignorePublic: Bool
     let namesToIgnore: Set<String>
     let modulesToIgnore: Set<String>
+    let fileNamesToIgnore: Set<String>
     weak var delegate: ObfuscatorDelegate?
 
-    init(sourceKit: SourceKit, logger: LoggerProtocol, dataStore: SourceKitObfuscatorDataStore, namesToIgnore: Set<String>, ignorePublic: Bool, modulesToIgnore: Set<String>) {
+    init(sourceKit: SourceKit, logger: LoggerProtocol, dataStore: SourceKitObfuscatorDataStore, namesToIgnore: Set<String>, ignorePublic: Bool, modulesToIgnore: Set<String>, fileNamesToIgnore: Set<String>) {
         self.sourceKit = sourceKit
         self.logger = logger
         self.dataStore = dataStore
         self.ignorePublic = ignorePublic
         self.namesToIgnore = namesToIgnore
         self.modulesToIgnore = modulesToIgnore
+        self.fileNamesToIgnore = fileNamesToIgnore
     }
 
     var requests: sourcekitd_requests! {
@@ -34,25 +36,29 @@ extension SourceKitObfuscator {
         let compilerArguments = SKRequestArray(sourcekitd: sourceKit)
         module.compilerArguments.forEach(compilerArguments.append(_:))
         try module.sourceFiles.sorted { $0.path < $1.path }.forEach { file in
-            logger.log("--- Indexing: \(file.name)")
-            let req = SKRequestDictionary(sourcekitd: sourceKit)
-            req[keys.request] = requests.indexsource
-            req[keys.sourcefile] = file.path
-            req[keys.compilerargs] = compilerArguments
-            let response = try sourceKit.sendSync(req)
-            logger.log("--- Preprocessing indexing result of: \(file.name)")
-            response.recurseEntities { [unowned self] dict in
-                self.preprocess(declarationEntity: dict, ofFile: file, fromModule: module)
-            }
-            logger.log("--- Processing indexing result of: \(file.name)")
-            try response.recurseEntities { [unowned self] dict in
-                if self.ignorePublic, dict.isPublic {
-                    return
+            if !fileNamesToIgnore.contains(file.name) {
+                logger.log("--- Indexing: \(file.name)")
+                let req = SKRequestDictionary(sourcekitd: sourceKit)
+                req[keys.request] = requests.indexsource
+                req[keys.sourcefile] = file.path
+                req[keys.compilerargs] = compilerArguments
+                let response = try sourceKit.sendSync(req)
+                logger.log("--- Preprocessing indexing result of: \(file.name)")
+                response.recurseEntities { [unowned self] dict in
+                    self.preprocess(declarationEntity: dict, ofFile: file, fromModule: module)
                 }
-                try self.process(declarationEntity: dict, ofFile: file, fromModule: module)
+                logger.log("--- Processing indexing result of: \(file.name)")
+                try response.recurseEntities { [unowned self] dict in
+                    if self.ignorePublic, dict.isPublic {
+                        return
+                    }
+                    try self.process(declarationEntity: dict, ofFile: file, fromModule: module)
+                }
+                let indexedFile = IndexedFile(file: file, response: response)
+                self.dataStore.indexedFiles.append(indexedFile)
+            } else {
+                logger.log("--- Ignoring file: \(file.name)")
             }
-            let indexedFile = IndexedFile(file: file, response: response)
-            self.dataStore.indexedFiles.append(indexedFile)
         }
         dataStore.plists = dataStore.plists.union(module.plists)
         dataStore.ibxmls = dataStore.ibxmls.union(module.ibxmls)
