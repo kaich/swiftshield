@@ -12,16 +12,34 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+
     - name: Build
       run: make build
       env:
         DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
+
     - name: Run tests
       run: make test
+
     - name: Check the example project
       env:
         DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
       run: cd ./ExampleProject && make swiftshield
+
     - name: Try to package it
       run: make package
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: |
+          ./.build/apple/Products/Release/_PRODUCT/swiftshield.zip
+        tag_name: ${{ github.sha }}
+        release_name: Release ${{ github.sha }}
+        body: |
+          Release ${{ github.sha }}
+        draft: false
+        prerelease: false

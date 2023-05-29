@@ -2,7 +2,7 @@ SHELL = /bin/bash
 
 REPODIR = $(shell pwd)
 BUILDDIR = $(REPODIR)/.build
-RELEASEBUILDDIR = $(BUILDDIR)/release
+RELEASEBUILDDIR = $(BUILDDIR)/apple/Products/Release
 TEMPPRODUCTDIR = $(BUILDDIR)/_PRODUCT
 PRODUCTDIR = $(RELEASEBUILDDIR)/_PRODUCT
 
@@ -14,8 +14,9 @@ all: build
 .PHONY: build
 build:
 	swift build \
-		-c release \
-		--build-path "$(BUILDDIR)"
+		--arch arm64 --arch x86_64 \
+		--build-path "$(BUILDDIR)" \
+		-c release 
 	rm -rf "$(PRODUCTDIR)"
 	rm -rf "$(TEMPPRODUCTDIR)"
 	mkdir -p "$(TEMPPRODUCTDIR)"
@@ -28,7 +29,7 @@ build:
 	rm -rf $(PRODUCTDIR)/include/swiftshield/*.product
 	rm -rf $(PRODUCTDIR)/include/swiftshield/ModuleCache
 	rm -f "$(PRODUCTDIR)/include/swiftshield/swiftshield.swiftdoc"
-	rm -f "$(PRODUCTDIR)/include/swiftshield/swiftshield.swiftmodule"
+	rm -rf "$(PRODUCTDIR)/include/swiftshield/swiftshield.swiftmodule"
 	mv "$(PRODUCTDIR)/include/swiftshield/swiftshield" "$(PRODUCTDIR)/bin"
 	cp -a "$(REPODIR)/Sources/Csourcekitd/." "$(PRODUCTDIR)/include/swiftshield/Csourcekitd"
 	rm -f "$(RELEASEBUILDDIR)/swiftshield"
