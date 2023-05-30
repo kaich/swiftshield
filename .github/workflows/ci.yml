@@ -3,7 +3,10 @@ name: ci
 on:
   push:
     tags:        
-      - '*'
+      - "*.*.*"
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -29,5 +32,6 @@ jobs:
       with:
         files: |
           ./.build/apple/Products/Release/_PRODUCT/swiftshield.zip
+        generate_release_notes: true
         draft: false
         prerelease: false
