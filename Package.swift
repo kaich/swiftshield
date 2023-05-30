@@ -32,7 +32,7 @@ let package = Package(
             name: "SwiftShieldTests",
             dependencies: ["SwiftShieldCore"],
             resources: [
-                .copy("TestData")
+                .copy("TestData"),
             ]
         ),
     ]

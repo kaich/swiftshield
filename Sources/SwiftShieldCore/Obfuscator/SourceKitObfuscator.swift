@@ -45,14 +45,14 @@ extension SourceKitObfuscator {
                 let response = try sourceKit.sendSync(req)
                 logger.log("--- Preprocessing indexing result of: \(file.name)")
                 response.recurseEntities { [unowned self] dict in
-                    self.preprocess(declarationEntity: dict, ofFile: file, fromModule: module)
+                    preprocess(declarationEntity: dict, ofFile: file, fromModule: module)
                 }
                 logger.log("--- Processing indexing result of: \(file.name)")
                 try response.recurseEntities { [unowned self] dict in
-                    if self.ignorePublic, dict.isPublic {
+                    if ignorePublic, dict.isPublic {
                         return
                     }
-                    try self.process(declarationEntity: dict, ofFile: file, fromModule: module)
+                    try process(declarationEntity: dict, ofFile: file, fromModule: module)
                 }
                 let indexedFile = IndexedFile(file: file, response: response)
                 self.dataStore.indexedFiles.append(indexedFile)
@@ -85,8 +85,8 @@ extension SourceKitObfuscator {
             return
         }
         guard let rawName: String = dict[keys.name],
-              let usr: String = dict[keys.usr] else
-        {
+              let usr: String = dict[keys.usr]
+        else {
             return
         }
 
@@ -96,7 +96,7 @@ extension SourceKitObfuscator {
             logger.log("* Ignoring \(name) (USR: \(usr)) because its included in ignore-names", verbose: true)
             return
         }
-        
+
 //        if kind == .enum, let usr: String = dict[keys.usr] {
 //            let codingKeysUSR: Set<String> = ["s:s9CodingKeyP"]
 //            if try inheritsFromAnyUSR(
@@ -145,28 +145,28 @@ extension SourceKitObfuscator {
                 logger.log("Info: Proceeding with \(name) (USR: \(usr)) because its parent does not appear to inherit from Codable.)", verbose: true)
             }
         }
-        
+
         if let related: SKResponseArray = dict[keys.related], related.count > 0, related[0][keys.name] == "NSManagedObject" {
             logger.log("* Ignoring \(name) (USR: \(usr)) because its Core Data entity.", verbose: true)
             return
         }
-        
+
         if let attributes: SKResponseArray = dict[keys.attributes] {
             var isFound = false
-            
+
             for i in 0 ..< attributes.count {
                 if let attr: SKUID = attributes[i][keys.attribute], attr.description == "source.decl.attribute.NSManaged" {
                     isFound = true
                     break
                 }
             }
-            
+
             if isFound {
                 logger.log("* Ignoring \(name) (USR: \(usr)) because its Core Data entity attribute.", verbose: true)
                 return
             }
         }
-        
+
 //        logger.log("* Found declaration of \(name) (USR: \(usr)), dict \(dict.description ?? "")")
         logger.log("* Found declaration of \(name) (USR: \(usr))")
         dataStore.processedUsrs.insert(usr)
@@ -202,20 +202,21 @@ extension SourceKitObfuscator {
         logger.log("--- Obfuscating \(index.file.name)")
         var referenceArray = [Reference]()
         index.response.recurseEntities { [unowned self] dict in
-            guard let kindId: SKUID = dict[self.keys.kind],
-                kindId.referenceType() != nil || kindId.declarationType() != nil,
-                let rawName: String = dict[self.keys.name],
-                let usr: String = dict[self.keys.usr],
-                self.dataStore.processedUsrs.contains(usr),
-                let line: Int = dict[self.keys.line],
-                let column: Int = dict[self.keys.column],
-                dict.isReferencingInternalFramework(dataStore: self.dataStore) == false else {
+            guard let kindId: SKUID = dict[keys.kind],
+                  kindId.referenceType() != nil || kindId.declarationType() != nil,
+                  let rawName: String = dict[keys.name],
+                  let usr: String = dict[keys.usr],
+                  dataStore.processedUsrs.contains(usr),
+                  let line: Int = dict[keys.line],
+                  let column: Int = dict[keys.column],
+                  dict.isReferencingInternalFramework(dataStore: self.dataStore) == false
+            else {
                 return
             }
 
             let name = rawName.removingParameterInformation
-            let obfuscatedName = self.obfuscate(name: name)
-            self.logger.log("* Found reference of \(name) (USR: \(usr) at \(index.file.name) (\(line):\(column)) -> now \(obfuscatedName)")
+            let obfuscatedName = obfuscate(name: name)
+            logger.log("* Found reference of \(name) (USR: \(usr) at \(index.file.name) (\(line):\(column)) -> now \(obfuscatedName)")
             let reference = Reference(name: name, line: line, column: column)
             referenceArray.append(reference)
         }
@@ -248,11 +249,11 @@ extension SourceKitObfuscator {
             throw error
         }
     }
-    
+
     func obfuscate(ibxml: File, xmlObfuscator: IBXMLObfuscationWrapper) throws {
         logger.log("--- Obfuscating \(ibxml.name)")
         let newContents = try xmlObfuscator.obfuscate(file: ibxml)
-        if let error = self.delegate?.obfuscator(self, didObfuscateFile: ibxml, newContents: newContents) {
+        if let error = delegate?.obfuscator(self, didObfuscateFile: ibxml, newContents: newContents) {
             throw error
         }
     }
@@ -295,8 +296,9 @@ extension SourceKitObfuscator {
         while currentCharIndex < charArray.count, currentReferenceIndex < sortedReferences.count {
             let reference = sortedReferences[currentReferenceIndex]
             if previousReference != nil,
-                reference.line == previousReference.line,
-                reference.column == previousReference.column {
+               reference.line == previousReference.line,
+               reference.column == previousReference.column
+            {
                 // Avoid duplicates.
                 currentReferenceIndex += 1
             }
@@ -346,7 +348,7 @@ extension SourceKitObfuscator {
         req[keys.compilerargs] = module.compilerArguments
         req[keys.usr] = usr
         // We have to store the file of the USR because it looks CursorInfo doesn't returns USRs if you use the wrong one
-        //, except if it's a closed source framework. No idea why it works like that.
+        // , except if it's a closed source framework. No idea why it works like that.
         // Hopefully this won't break in the future.
         let file: File = dataStore.fileForUSR[usr] ?? module.sourceFiles.first!
         req[keys.sourcefile] = file.path
@@ -414,7 +416,7 @@ extension SKResponseDictionary {
             guard isReference == false else {
                 return
             }
-            guard let usr: String = dict[self.sourcekitd.keys.usr] else {
+            guard let usr: String = dict[sourcekitd.keys.usr] else {
                 return
             }
             if dataStore.processedUsrs.contains(usr) == false {

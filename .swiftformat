@@ -1,0 +1,3 @@
+--allman false
+--stripunusedargs closure-only
+--exclude ExampleProject,Tests/SwiftShieldTests/XCTestManifests.swift

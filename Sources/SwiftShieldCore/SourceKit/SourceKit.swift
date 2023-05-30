@@ -607,7 +607,7 @@ final class SKResponseDictionary {
         guard let array: SKResponseArray = self[uid] else {
             return
         }
-        try array.forEach(parent: self) { (_, dict) -> Bool in
+        try array.forEach(parent: self) { _, dict -> Bool in
             try block(dict)
             try dict.recurseEntities(block: block)
             return true
@@ -628,10 +628,10 @@ final class SKResponseArray {
     var count: Int { sourcekitd.api.variant_array_get_count(array) }
 
     subscript(i: Int) -> SKResponseDictionary {
-        return get(i, parent: nil)
+        getValue(i, parent: nil)
     }
 
-    private func get(_ i: Int, parent: SKResponseDictionary!) -> SKResponseDictionary {
+    private func getValue(_ i: Int, parent: SKResponseDictionary!) -> SKResponseDictionary {
         SKResponseDictionary(sourcekitd.api.variant_array_get_value(array, i), response: resp, parent: parent)
     }
 
@@ -639,7 +639,7 @@ final class SKResponseArray {
     @discardableResult
     func forEach(parent: SKResponseDictionary, _ applier: (Int, SKResponseDictionary) throws -> Bool) rethrows -> Bool {
         for i in 0 ..< count {
-            if try applier(i, get(i, parent: parent)) == false {
+            if try applier(i, getValue(i, parent: parent)) == false {
                 return false
             }
         }
@@ -741,7 +741,7 @@ struct Variant: CustomStringConvertible {
             return
         }
         _ = sourcekitd.api.variant_array_apply(children) { _, val in
-            let variant = Variant(val: val, context: self.context)
+            let variant = Variant(val: val, context: context)
             block(variant)
             variant.recurseOver(uid: uid, block: block)
             return true

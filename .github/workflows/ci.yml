@@ -2,9 +2,8 @@ name: ci
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:        
+      - '*'
 
 jobs:
   build:
@@ -20,7 +19,7 @@ jobs:
     - name: Run tests
       run: make test
 
-    - name: Try to package it
+    - name: Package
       run: make package
 
     - name: Create Release

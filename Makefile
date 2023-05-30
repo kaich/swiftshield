@@ -48,7 +48,6 @@ clean:
 
 .PHONY: test
 test:
-	swift test --generate-linuxmain
 	swift test
 
 .PHONY: swiftshield

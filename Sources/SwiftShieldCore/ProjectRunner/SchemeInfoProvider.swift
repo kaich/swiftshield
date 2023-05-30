@@ -45,10 +45,12 @@ struct SchemeInfoProvider: SchemeInfoProviderProtocol {
                 try parseMergeSwiftModulePhase(line: line, moduleName: moduleName, modules: &modules)
             } else if line.hasPrefix("ProcessInfoPlistFile") ||
                 line.hasPrefix("CopyPlistFile") ||
-                line.hasPrefix("Preprocess") {
+                line.hasPrefix("Preprocess")
+            {
                 try parsePlistPhase(line: line + lines[index + 1], modules: &modules)
-            }else if includeIBXMLs, line.hasPrefix("CompileStoryboard") ||
-                line.hasPrefix("CompileXIB") {
+            } else if includeIBXMLs, line.hasPrefix("CompileStoryboard") ||
+                line.hasPrefix("CompileXIB")
+            {
                 try parseUIsPhase(line: line + (lines[safe: index + 1] ?? "") + (lines[safe: index + 2] ?? "") + (lines[safe: index + 3] ?? ""), modules: &modules)
             }
         }
@@ -82,20 +84,21 @@ struct SchemeInfoProvider: SchemeInfoProviderProtocol {
 
         let relevantArguments = fullRelevantArguments.replacingEscapedSpaces
             .components(separatedBy: " ")
-            .map { $0.removingPlaceholder }
+            .map(\.removingPlaceholder)
 
         var files: [File]
         var compilerArguments = parseCompilerArguments(from: relevantArguments)
 
-        if let swiftFileList = swiftFileList {
+        if let swiftFileList {
             let swiftFilePaths = try swiftFileList.read()
                 .components(separatedBy: "\n")
-                .filter { !$0.isEmpty }.map{ $0.removeEscapedSpaces }
+                .filter { !$0.isEmpty }.map(\.removeEscapedSpaces)
 
             if let complieFlagIndex = compilerArguments.firstIndex(of: "-c") {
                 var insertIndex = complieFlagIndex
                 if complieFlagIndex + 1 < compilerArguments.count,
-                    compilerArguments[complieFlagIndex + 1].hasPrefix("-j") {
+                   compilerArguments[complieFlagIndex + 1].hasPrefix("-j")
+                {
                     insertIndex += 1
                 }
 
@@ -115,7 +118,7 @@ struct SchemeInfoProvider: SchemeInfoProviderProtocol {
 
     private func parseModuleFiles(from relevantArguments: [String]) -> [File] {
         var files: [File] = []
-        var fileZone: Bool = false
+        var fileZone = false
         for arg in relevantArguments {
             if fileZone {
                 if arg.hasPrefix("/") {
@@ -172,7 +175,7 @@ struct SchemeInfoProvider: SchemeInfoProviderProtocol {
         let file = File(path: plistPath.removingPlaceholder)
         add(plist: file, to: moduleName, modules: &modules)
     }
-    
+
     private func parseUIsPhase(line: String, modules: inout MutableModuleDictionary) throws {
         let prefixStoryboard = "CompileStoryboard"
         let prefixXIB = "CompileXIB"
@@ -204,13 +207,14 @@ extension SchemeInfoProvider {
 
     private func add(plist: File, to moduleName: String, modules: inout MutableModuleDictionary) {
         guard URL(fileURLWithPath: plist.path).lastPathComponent
-            .hasPrefix("Preprocessed-") == false else {
+            .hasPrefix("Preprocessed-") == false
+        else {
             return
         }
         registerFoundModuleIfNeeded(moduleName, modules: &modules)
         modules[moduleName]?.plists.append(plist)
     }
-    
+
     private func add(ibXML: File, to moduleName: String, modules: inout MutableModuleDictionary) {
         let fileExt = URL(fileURLWithPath: ibXML.path).lastPathComponent
         guard fileExt.hasSuffix("storyboard") || fileExt.hasSuffix("xib") else {
@@ -242,7 +246,7 @@ extension SchemeInfoProvider {
         } else {
             projects = [Project(xcodeProjFile: projectFile)]
         }
-        let tuple: [(File, String)] = try projects.map { ($0.pbxProj, try $0.markAsSwiftShielded()) }
+        let tuple: [(File, String)] = try projects.map { try ($0.pbxProj, $0.markAsSwiftShielded()) }
         return Dictionary(uniqueKeysWithValues: tuple)
     }
 }

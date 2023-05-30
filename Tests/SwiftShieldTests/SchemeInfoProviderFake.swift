@@ -2,7 +2,7 @@
 import XCTest
 
 final class SchemeInfoProviderFake: SchemeInfoProviderProtocol {
-    var projectFile: File = File(path: "fakePath/path.xcodeproj")
+    var projectFile: File = .init(path: "fakePath/path.xcodeproj")
 
     var schemeName: String {
         "fakeScheme"

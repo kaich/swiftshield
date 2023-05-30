@@ -40,18 +40,18 @@ public final class DLHandle {
 }
 
 public struct DLOpenFlags: RawRepresentable, OptionSet {
-    public static let lazy: DLOpenFlags = DLOpenFlags(rawValue: RTLD_LAZY)
-    public static let now: DLOpenFlags = DLOpenFlags(rawValue: RTLD_NOW)
-    public static let local: DLOpenFlags = DLOpenFlags(rawValue: RTLD_LOCAL)
-    public static let global: DLOpenFlags = DLOpenFlags(rawValue: RTLD_GLOBAL)
+    public static let lazy: DLOpenFlags = .init(rawValue: RTLD_LAZY)
+    public static let now: DLOpenFlags = .init(rawValue: RTLD_NOW)
+    public static let local: DLOpenFlags = .init(rawValue: RTLD_LOCAL)
+    public static let global: DLOpenFlags = .init(rawValue: RTLD_GLOBAL)
 
     // Platform-specific flags.
     #if os(macOS)
-        public static let first: DLOpenFlags = DLOpenFlags(rawValue: RTLD_FIRST)
-        public static let deepBind: DLOpenFlags = DLOpenFlags(rawValue: 0)
+        public static let first: DLOpenFlags = .init(rawValue: RTLD_FIRST)
+        public static let deepBind: DLOpenFlags = .init(rawValue: 0)
     #else
-        public static let first: DLOpenFlags = DLOpenFlags(rawValue: 0)
-        public static let deepBind: DLOpenFlags = DLOpenFlags(rawValue: RTLD_DEEPBIND)
+        public static let first: DLOpenFlags = .init(rawValue: 0)
+        public static let deepBind: DLOpenFlags = .init(rawValue: RTLD_DEEPBIND)
     #endif
 
     public var rawValue: Int32

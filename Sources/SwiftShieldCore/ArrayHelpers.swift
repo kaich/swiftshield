@@ -23,8 +23,8 @@ extension Array where Element: Equatable {
         }
         return filtered
     }
-    
-    //prevent index out of range
+
+    // prevent index out of range
     public subscript(safe index: Index) -> Element? {
         (startIndex <= index && index < endIndex) ? self[index] : nil
     }

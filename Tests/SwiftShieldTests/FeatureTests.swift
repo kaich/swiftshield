@@ -72,7 +72,7 @@ final class FeatureTests: XCTestCase {
         }
         """)
     }
-    
+
     func test_NamesToIgnore() throws {
         let (obfs, store, delegate) = baseTestData(namesToIgnore: ["IgnoreClassName",
                                                                    "CodingKeys"])
@@ -83,13 +83,13 @@ final class FeatureTests: XCTestCase {
 
         struct Foo: Codable {
             let a: String
-            
+
             enum CodingKeys: String, CodingKey {
                 case a
             }
         }
         """)
-        
+
         store.obfuscationDictionary["IgnoreClassName"] = "OBS1"
         store.obfuscationDictionary["Foo"] = "OBS2"
         store.obfuscationDictionary["a"] = "OBS3"
@@ -105,7 +105,7 @@ final class FeatureTests: XCTestCase {
 
         struct OBS2: Codable {
             let a: String
-            
+
             enum CodingKeys: String, CodingKey {
                 case a
             }

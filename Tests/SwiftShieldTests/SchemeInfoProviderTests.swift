@@ -153,7 +153,7 @@ final class SchemeInfoProviderTests: XCTestCase {
             includeIBXMLs: true
         )
         let modules = try provider.getModulesFromProject()
-        XCTAssertEqual(modules.map { $0.withoutCompilerArgs }, [anotherTargetModule, exampleProjectModule])
+        XCTAssertEqual(modules.map(\.withoutCompilerArgs), [anotherTargetModule, exampleProjectModule])
     }
 
     func test_baseExtraction_ignoringModule() throws {
@@ -168,7 +168,7 @@ final class SchemeInfoProviderTests: XCTestCase {
             includeIBXMLs: false
         )
         let modules = try provider.getModulesFromProject()
-        XCTAssertEqual(modules.map { $0.withoutCompilerArgs }, [exampleProjectModule])
+        XCTAssertEqual(modules.map(\.withoutCompilerArgs), [exampleProjectModule])
     }
 
     func test_singleProject_tagging() throws {

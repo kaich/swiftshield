@@ -19,7 +19,7 @@ extension Swiftshield {
 
         @Option(name: .shortAndLong, help: "A list of targets, separated by a comma, that should NOT be obfuscated.")
         var ignoreTargets: String?
-        
+
         @Option(name: .shortAndLong, help: "A list of names, separated by a comma, that should NOT be obfuscated.")
         var ignoreNames: String?
 
@@ -28,7 +28,7 @@ extension Swiftshield {
 
         @Flag(help: "Don't obfuscate content that is 'public' or 'open' (a.k.a 'SDK Mode').")
         var ignorePublic: Bool
-        
+
         @Flag(help: "obfuscate storyboard and xib files. (experimental)")
         var includeIbxmls: Bool
 

@@ -1,6 +1,6 @@
 import Foundation
 
-typealias RegexClosure = ((NSTextCheckingResult) -> String?)
+typealias RegexClosure = (NSTextCheckingResult) -> String?
 
 func firstMatch(for regex: String, in text: String) -> String? {
     matches(for: regex, in: text).first
@@ -46,7 +46,7 @@ extension String {
     var replacingEscapedSpaces: String {
         replacingOccurrences(of: "\\ ", with: spacedFolderPlaceholder)
     }
-    
+
     var removeEscapedSpaces: String {
         replacingOccurrences(of: "\\ ", with: " ")
     }
@@ -76,7 +76,7 @@ extension NSTextCheckingResult {
 extension String {
     /// Considers emoji scalars when counting.
     var utf8Count: Int {
-        return utf8.count
+        utf8.count
     }
 }
 

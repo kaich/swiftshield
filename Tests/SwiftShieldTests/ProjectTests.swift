@@ -29,7 +29,7 @@ final class ProjectTests: XCTestCase {
         let dataTemp = wkspaceTemp + "/contents.xcworkspacedata"
         try File(path: dataTemp).write(contents: workspaceContent)
         let workspaceFile = File(path: wkspaceTemp)
-        let workspace: Workspace = Workspace(workspaceFile: workspaceFile)
+        let workspace = Workspace(workspaceFile: workspaceFile)
         let projects = try workspace.xcodeProjFiles()
         XCTAssertEqual(projects.count, 2)
         let workspaceRoot = URL(fileURLWithPath: wkspaceTemp).deletingLastPathComponent().relativePath

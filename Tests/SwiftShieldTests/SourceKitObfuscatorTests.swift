@@ -14,7 +14,7 @@ final class SourceKitObfuscatorTests: XCTestCase {
         let expectedSet = Set<String>(["s:18FeatureTestProject3FooC", "c:@M@FeatureTestProject@objc(cs)AppDelegate", "s:18FeatureTestProject28CodableProtocolInAnotherFileP"])
 
         XCTAssertEqual(dataStore.processedUsrs, expectedSet)
-        XCTAssertEqual(Set(dataStore.indexedFiles.map { $0.file }), module.sourceFiles)
+        XCTAssertEqual(Set(dataStore.indexedFiles.map(\.file)), module.sourceFiles)
     }
 
     func test_removeParametersFromString() {

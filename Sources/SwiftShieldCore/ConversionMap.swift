@@ -50,9 +50,9 @@ struct ConversionMap: Hashable {
     ) -> String {
         try? FileManager.default.createDirectory(at:
             URL(fileURLWithPath: outputPath(forProjectPath: projectPath)),
-                                                 withIntermediateDirectories: false,
-                                                 attributes: nil)
-        let dateFormatter: DateFormatter = DateFormatter()
+            withIntermediateDirectories: false,
+            attributes: nil)
+        let dateFormatter = DateFormatter()
         dateFormatter.locale = locale
         dateFormatter.timeZone = timeZone
         dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
