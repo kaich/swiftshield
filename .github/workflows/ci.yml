@@ -30,9 +30,5 @@ jobs:
       with:
         files: |
           ./.build/apple/Products/Release/_PRODUCT/swiftshield.zip
-        tag_name: ${{ github.sha }}
-        release_name: Release ${{ github.sha }}
-        body: |
-          Release ${{ github.sha }}
         draft: false
         prerelease: false
