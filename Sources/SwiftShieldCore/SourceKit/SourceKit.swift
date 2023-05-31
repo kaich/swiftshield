@@ -645,6 +645,16 @@ final class SKResponseArray {
         }
         return true
     }
+    
+    func contains(where condition: (SKResponseDictionary) -> Bool) -> Bool {
+        for i in 0 ..< count {
+            let value = getValue(i, parent: nil)
+            if condition(value) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 extension SKRequestDictionary: CustomStringConvertible {

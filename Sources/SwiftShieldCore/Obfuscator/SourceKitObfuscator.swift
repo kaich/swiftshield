@@ -97,20 +97,7 @@ extension SourceKitObfuscator {
             return
         }
 
-//        if kind == .enum, let usr: String = dict[keys.usr] {
-//            let codingKeysUSR: Set<String> = ["s:s9CodingKeyP"]
-//            if try inheritsFromAnyUSR(
-//                usr,
-//                anyOf: codingKeysUSR,
-//                inModule: module
-//            ) {
-//                logger.log("* Ignoring \(name) (USR: \(usr)) because its inherits from CodingKey.", verbose: true)
-//                return
-//            } else {
-//                logger.log("Info: Proceeding with \(name) (USR: \(usr)) because its does not appear to inherit from CodingKey.)", verbose: true)
-//            }
-//        }
-
+        // Skip enum elements of CodingKey enum
         if kind == .enumelement, let parentUSR: String = dict.parent[keys.usr] {
             let codingKeysUSR: Set<String> = ["s:s9CodingKeyP"]
             if try inheritsFromAnyUSR(
@@ -125,14 +112,16 @@ extension SourceKitObfuscator {
             }
         }
 
+        // Skip properties of Codable structs
         if kind == .property,
            dict.parent != nil,
            let parentKind: SKUID = dict.parent[keys.kind],
            parentKind.declarationType() == .object
         {
             guard let parentUSR: String = dict.parent[keys.usr] else {
-                throw logger.fatalError(forMessage: "Parent of \(usr) is has no USR!")
+                throw logger.fatalError(forMessage: "Parent of \(usr) doesn't have USR!")
             }
+
             let codableUSRs: Set<String> = ["s:s7Codablea", "s:SE", "s:Se"]
             if try inheritsFromAnyUSR(
                 parentUSR,
@@ -146,28 +135,38 @@ extension SourceKitObfuscator {
             }
         }
 
+        // Skip Core Data entities
         if let related: SKResponseArray = dict[keys.related], related.count > 0, related[0][keys.name] == "NSManagedObject" {
             logger.log("* Ignoring \(name) (USR: \(usr)) because its Core Data entity.", verbose: true)
             return
         }
 
+        // Skip Core Data entity attributes
         if let attributes: SKResponseArray = dict[keys.attributes] {
-            var isFound = false
-
-            for i in 0 ..< attributes.count {
-                if let attr: SKUID = attributes[i][keys.attribute], attr.description == "source.decl.attribute.NSManaged" {
-                    isFound = true
-                    break
+            if attributes.contains(where: { attribute in
+                if let attr: SKUID = attribute[keys.attribute], attr.description == "source.decl.attribute.NSManaged" {
+                    return true
                 }
-            }
-
-            if isFound {
+                return false
+            }) {
                 logger.log("* Ignoring \(name) (USR: \(usr)) because its Core Data entity attribute.", verbose: true)
                 return
             }
         }
-
-//        logger.log("* Found declaration of \(name) (USR: \(usr)), dict \(dict.description ?? "")")
+        
+        // Skip "wrappedValue" property in entities that have @propertyWrapper attribute
+        if name == "wrappedValue", dict.parent != nil, let attributes: SKResponseArray = dict.parent[keys.attributes] {
+            if attributes.contains(where: { attribute in
+                if let attr: SKUID = attribute[keys.attribute], attr.description == "source.decl.attribute.propertyWrapper" {
+                    return true
+                }
+                return false
+            }) {
+                logger.log("* Ignoring \(name) (USR: \(usr)) because its parent has @propertyWrapper attribute.", verbose: true)
+                return
+            }
+        }
+        
         logger.log("* Found declaration of \(name) (USR: \(usr))")
         dataStore.processedUsrs.insert(usr)
 
