@@ -95,11 +95,7 @@ struct UserDefault<T> {
             return UserDefaults.standard.object(forKey: key) as? T ?? defaultValue
         }
         set {
-            if let optional = newValue as? AnyOptional, optional.isNil {
-                UserDefaults.standard.removeObject(forKey: key)
-            } else {
-                UserDefaults.standard.set(newValue, forKey: key)
-            }
+            UserDefaults.standard.set(newValue, forKey: key)
         }
     }
 }
