@@ -153,7 +153,7 @@ extension SourceKitObfuscator {
                 return
             }
         }
-        
+
         // Skip "wrappedValue" property in entities that have @propertyWrapper attribute
         if name == "wrappedValue", dict.parent != nil, let attributes: SKResponseArray = dict.parent[keys.attributes] {
             if attributes.contains(where: { attribute in
@@ -166,7 +166,7 @@ extension SourceKitObfuscator {
                 return
             }
         }
-        
+
         logger.log("* Found declaration of \(name) (USR: \(usr))")
         dataStore.processedUsrs.insert(usr)
 

@@ -645,7 +645,7 @@ final class SKResponseArray {
         }
         return true
     }
-    
+
     func contains(where condition: (SKResponseDictionary) -> Bool) -> Bool {
         for i in 0 ..< count {
             let value = getValue(i, parent: nil)
