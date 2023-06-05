@@ -111,7 +111,7 @@ extension SourceKitObfuscator {
                 logger.log("Info: Proceeding with \(name) (USR: \(usr)) because its does not appear to inherit from CodingKey.)", verbose: true)
             }
         }
-        
+
         // Skip enum elements of CodingKey enum
         if kind == .enumelement, let parentUSR: String = dict.parent[keys.usr] {
             let codingKeysUSR: Set<String> = ["s:s9CodingKeyP"]

@@ -19,7 +19,7 @@ extension Swiftshield {
 
         @Option(name: .shortAndLong, help: "SDK (default: iphonesimulator)")
         var sdk: String?
-        
+
         @Option(name: .shortAndLong, help: "A list of targets, separated by a comma, that should NOT be obfuscated.")
         var ignoreTargets: String?
 

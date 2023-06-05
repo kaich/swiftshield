@@ -59,7 +59,7 @@ final class FeatureTests: XCTestCase {
 
         XCTAssertEqual(delegate.receivedContent[modifiableFilePath], """
         struct OBS1: Codable {
-            enum OBS9: CodingKey {
+            enum FooCodingKeys: CodingKey {
                 case a
                 case b
                 case c
