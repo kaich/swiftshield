@@ -3,6 +3,7 @@ import Foundation
 struct SchemeInfoProvider: SchemeInfoProviderProtocol {
     let projectFile: File
     let schemeName: String
+    var sdk: String? = nil
     let taskRunner: TaskRunnerProtocol
     let logger: LoggerProtocol
     let modulesToIgnore: Set<String>
@@ -20,7 +21,7 @@ struct SchemeInfoProvider: SchemeInfoProviderProtocol {
         let command = "/usr/bin/xcodebuild"
         let projectParameter = isWorkspace ? "-workspace" : "-project"
         let arguments: [String] = [
-            projectParameter, projectFile.path, "-scheme", schemeName, "-sdk", "iphonesimulator", "clean", "build",
+            projectParameter, projectFile.path, "-scheme", schemeName, "-sdk", sdk ?? "iphonesimulator", "clean", "build",
         ]
 
         let result = taskRunner.runTask(withCommand: command, arguments: arguments)

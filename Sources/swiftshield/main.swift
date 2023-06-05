@@ -17,6 +17,9 @@ extension Swiftshield {
         @Option(name: .shortAndLong, help: "The main scheme from the project to build.")
         var scheme: String
 
+        @Option(name: .shortAndLong, help: "SDK (default: iphonesimulator)")
+        var sdk: String?
+        
         @Option(name: .shortAndLong, help: "A list of targets, separated by a comma, that should NOT be obfuscated.")
         var ignoreTargets: String?
 
@@ -48,6 +51,7 @@ extension Swiftshield {
 
             let runner = SwiftSwiftAssembler.generate(
                 projectPath: projectFile, scheme: scheme,
+                sdk: sdk,
                 modulesToIgnore: modulesToIgnore,
                 namesToIgnore: namesToIgnore,
                 fileNamesToIgnore: fileNamesToIgnore,

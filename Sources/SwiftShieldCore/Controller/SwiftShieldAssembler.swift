@@ -4,6 +4,7 @@ public enum SwiftSwiftAssembler {
     public static func generate(
         projectPath: String,
         scheme: String,
+        sdk: String?,
         modulesToIgnore: Set<String>,
         namesToIgnore: Set<String>,
         fileNamesToIgnore: Set<String>,
@@ -23,6 +24,7 @@ public enum SwiftSwiftAssembler {
         let infoProvider = SchemeInfoProvider(
             projectFile: projectFile,
             schemeName: scheme,
+            sdk: sdk,
             taskRunner: taskRunner,
             logger: logger,
             modulesToIgnore: modulesToIgnore,
