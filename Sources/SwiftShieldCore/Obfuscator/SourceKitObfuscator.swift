@@ -311,6 +311,7 @@ extension SourceKitObfuscator {
                 let nextChar = characters[rand]
                 randomString.append(nextChar)
             }
+            newName = randomString
         case .words:
             newName = TypeNameObfuscator.obscure(name: name)
         }

@@ -13,10 +13,10 @@ final class SourceKitObfuscatorDataStore {
 }
 
 extension SourceKitObfuscatorDataStore {
-    static let kCacheUrl = FileManager.default.currentDirectoryPath.appending("/.sscache")
+    static let kCacheUrl = FileManager.default.currentDirectoryPath.appending("/swiftshield-output/.sscache")
     
     func saveCache() {
-        guard let url = URL(string: Self.kCacheUrl) else { return }
+        let url = URL(fileURLWithPath: Self.kCacheUrl)
         do {
             let data = try JSONSerialization.data(withJSONObject: obfuscationDictionary)
             try data.write(to: url)
@@ -26,7 +26,7 @@ extension SourceKitObfuscatorDataStore {
     }
     
     func readCache() {
-        guard let url = URL(string: Self.kCacheUrl) else { return }
+        let url = URL(fileURLWithPath: Self.kCacheUrl)
         do {
             let data = try Data(contentsOf: url)
             if let dic = try JSONSerialization.jsonObject(with: data) as? [String : String] {

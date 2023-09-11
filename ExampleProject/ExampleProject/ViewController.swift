@@ -5,14 +5,14 @@ import CoreData
 func globalMethod() {}
 var globalProp = 0
 
-struct EaStruct {
+struct SomeStruct {
     static func staticMethod() {}
     func method() {}
-    static let singleton = EaStruct()
+    static let singleton = SomeStruct()
     var instanceProp = 0
 }
 
-enum RemEnum {
+enum SomeEnum {
     case a
     case b
     case c
@@ -34,25 +34,25 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .green
-        OmnisMaximeExpeditaModule.ametEtExcepturiModule()
+        StructFromDifferentModule.methodFromDifferentModule()
         
         
     }
 
-    func method(_: RemEnum) {
+    func method(_: SomeEnum) {
         globalMethod()
     }
 
     func anotherMethod() {
-        method(RemEnum.a)
-        method(RemEnum.b)
-        method(RemEnum.c)
+        method(SomeEnum.a)
+        method(SomeEnum.b)
+        method(SomeEnum.c)
         globalMethod()
     }
 }
 
-class QuiManager {
-    static let shared = QuiManager()
+class DataManager {
+    static let shared = DataManager()
 
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Model")
@@ -78,7 +78,7 @@ class QuiManager {
     }
 }
 
-extension QuiManager {
+extension DataManager {
     func creatingContact() {
         let contact = TestEntity(context: persistentContainer.viewContext)
         contact.testAttribute = "test"
@@ -86,7 +86,7 @@ extension QuiManager {
 }
 
 @propertyWrapper
-struct LaudantiumDefault<T> {
+struct UserDefault<T> {
     let key: String
     let defaultValue: T
 
