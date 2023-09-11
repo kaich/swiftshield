@@ -1,6 +1,10 @@
 import Foundation
 
 final class SourceKitObfuscator: ObfuscatorProtocol {
+    enum WordType: String {
+        case random, words
+    }
+    
     let sourceKit: SourceKit
     let logger: LoggerProtocol
     let dataStore: SourceKitObfuscatorDataStore
@@ -9,9 +13,10 @@ final class SourceKitObfuscator: ObfuscatorProtocol {
     let modulesToIgnore: Set<String>
     let fileNamesToIgnore: Set<String>
     let excludeTypes: Set<SourceKit.DeclarationType>
+    let wordType: WordType
     weak var delegate: ObfuscatorDelegate?
 
-    init(sourceKit: SourceKit, logger: LoggerProtocol, dataStore: SourceKitObfuscatorDataStore, namesToIgnore: Set<String>, ignorePublic: Bool, modulesToIgnore: Set<String>, fileNamesToIgnore: Set<String>, excludeTypes: Set<String>) {
+    init(sourceKit: SourceKit, logger: LoggerProtocol, dataStore: SourceKitObfuscatorDataStore, namesToIgnore: Set<String>, ignorePublic: Bool, wordType: String?, modulesToIgnore: Set<String>, fileNamesToIgnore: Set<String>, excludeTypes: Set<String>) {
         self.sourceKit = sourceKit
         self.logger = logger
         self.dataStore = dataStore
@@ -26,6 +31,7 @@ final class SourceKitObfuscator: ObfuscatorProtocol {
             }
         }
         self.excludeTypes = tmpTypes
+        self.wordType = WordType(rawValue: wordType ?? "") ?? .words
     }
 
     var requests: sourcekitd_requests! {
@@ -290,23 +296,31 @@ extension SourceKitObfuscator {
         guard cachedResult == nil else {
             return cachedResult!
         }
-        let size = 32
-        let letters: [Character] = Array("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        let numbers: [Character] = Array("0123456789")
-        let lettersAndNumbers = letters + numbers
-        var randomString = ""
-        for i in 0 ..< size {
-            let characters: [Character] = i == 0 ? letters : lettersAndNumbers
-            let rand = Int.random(in: 0 ..< characters.count)
-            let nextChar = characters[rand]
-            randomString.append(nextChar)
+        
+        var newName = ""
+        switch wordType {
+        case .random:
+            let size = 32
+            let letters: [Character] = Array("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            let numbers: [Character] = Array("0123456789")
+            let lettersAndNumbers = letters + numbers
+            var randomString = ""
+            for i in 0 ..< size {
+                let characters: [Character] = i == 0 ? letters : lettersAndNumbers
+                let rand = Int.random(in: 0 ..< characters.count)
+                let nextChar = characters[rand]
+                randomString.append(nextChar)
+            }
+        case .words:
+            newName = TypeNameObfuscator.obscure(name: name)
         }
-        guard dataStore.obfuscatedNames.contains(randomString) == false else {
+
+        guard dataStore.obfuscatedNames.contains(newName) == false else {
             return obfuscate(name: name)
         }
-        dataStore.obfuscatedNames.insert(randomString)
-        dataStore.obfuscationDictionary[name] = randomString
-        return randomString
+        dataStore.obfuscatedNames.insert(newName)
+        dataStore.obfuscationDictionary[name] = newName
+        return newName
     }
 
     func obfuscate(fileContents: String, fromReferences references: [Reference]) -> String {

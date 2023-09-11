@@ -4,13 +4,16 @@ public final class SwiftShieldController {
     let interactor: SwiftShieldInteractorProtocol
     let logger: LoggerProtocol
     let dryRun: Bool
+    let dataStore: SourceKitObfuscatorDataStore
 
     init(
         interactor: SwiftShieldInteractorProtocol,
+        dataStore: SourceKitObfuscatorDataStore,
         logger: LoggerProtocol,
         dryRun: Bool
     ) {
         self.interactor = interactor
+        self.dataStore = dataStore
         self.logger = logger
         self.dryRun = dryRun
         interactor.delegate = self
@@ -26,6 +29,8 @@ public final class SwiftShieldController {
             try interactor.markProjectsAsObfuscated()
             logger.log("--- Preparing conversion map")
             try interactor.prepare(map: map, date: Date())
+            logger.log("--- Cache dataStore")
+            dataStore.saveCache()
         } catch {
             logger.log(error.localizedDescription)
             throw error

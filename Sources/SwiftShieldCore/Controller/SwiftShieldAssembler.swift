@@ -5,6 +5,7 @@ public enum SwiftSwiftAssembler {
         projectPath: String,
         scheme: String,
         sdk: String?,
+        wordType: String?,
         modulesToIgnore: Set<String>,
         namesToIgnore: Set<String>,
         fileNamesToIgnore: Set<String>,
@@ -32,13 +33,16 @@ public enum SwiftSwiftAssembler {
             includeIBXMLs: includeIBXMLs
         )
 
+        let dataStore = SourceKitObfuscatorDataStore()
+        dataStore.readCache()
         let sourceKit = SourceKit(logger: logger)
         let obfuscator = SourceKitObfuscator(
             sourceKit: sourceKit,
             logger: logger,
-            dataStore: .init(),
+            dataStore: dataStore,
             namesToIgnore: namesToIgnore,
             ignorePublic: ignorePublic,
+            wordType: wordType,
             modulesToIgnore: modulesToIgnore,
             fileNamesToIgnore: fileNamesToIgnore,
             excludeTypes: excludeTypes
@@ -49,9 +53,12 @@ public enum SwiftSwiftAssembler {
             logger: logger,
             obfuscator: obfuscator
         )
+        
+        
 
         return SwiftShieldController(
             interactor: interactor,
+            dataStore: dataStore,
             logger: logger,
             dryRun: dryRun
         )

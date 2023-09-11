@@ -10,7 +10,7 @@ import NaturalLanguage
 
 class TypeNameObfuscator {
     
-    static func obscure(name: String) -> String? {
+    static func obscure(name: String) -> String {
         let (words, suffix) = split(text: name)
         var finalWords = [String]()
         if words.count > 1 {

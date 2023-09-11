@@ -1,5 +1,5 @@
 import Foundation
 
-public struct StructFromDifferentModule {
-    public static func methodFromDifferentModule() {}
+public struct OmnisMaximeExpeditaModule {
+    public static func ametEtExcepturiModule() {}
 }

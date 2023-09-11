@@ -19,6 +19,9 @@ extension Swiftshield {
 
         @Option(name: .shortAndLong, help: "SDK (default: iphonesimulator)")
         var sdk: String?
+    
+        @Option(name: .shortAndLong, help: "Obfucate replatment type. eg: random, words")
+        var wordType: String?
 
         @Option(name: .shortAndLong, help: "A list of targets, separated by a comma, that should NOT be obfuscated.")
         var ignoreTargets: String?
@@ -56,6 +59,7 @@ extension Swiftshield {
             let runner = SwiftSwiftAssembler.generate(
                 projectPath: projectFile, scheme: scheme,
                 sdk: sdk,
+                wordType: wordType,
                 modulesToIgnore: modulesToIgnore,
                 namesToIgnore: namesToIgnore,
                 fileNamesToIgnore: fileNamesToIgnore,
