@@ -5,14 +5,14 @@ import CoreData
 func globalMethod() {}
 var globalProp = 0
 
-struct SomeStruct {
+struct AccusantiumStruct {
     static func staticMethod() {}
     func method() {}
-    static let singleton = SomeStruct()
+    static let singleton = AccusantiumStruct()
     var instanceProp = 0
 }
 
-enum SomeEnum {
+enum EligendiEnum {
     case a
     case b
     case c
@@ -34,25 +34,25 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .green
-        StructFromDifferentModule.methodFromDifferentModule()
+        QuosRepellendusFacereModule.methodFromDifferentModule()
         
         
     }
 
-    func method(_: SomeEnum) {
+    func method(_: EligendiEnum) {
         globalMethod()
     }
 
     func anotherMethod() {
-        method(SomeEnum.a)
-        method(SomeEnum.b)
-        method(SomeEnum.c)
+        method(EligendiEnum.a)
+        method(EligendiEnum.b)
+        method(EligendiEnum.c)
         globalMethod()
     }
 }
 
-class DataManager {
-    static let shared = DataManager()
+class ProvidentManager {
+    static let shared = ProvidentManager()
 
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "Model")
@@ -78,7 +78,7 @@ class DataManager {
     }
 }
 
-extension DataManager {
+extension ProvidentManager {
     func creatingContact() {
         let contact = TestEntity(context: persistentContainer.viewContext)
         contact.testAttribute = "test"
@@ -86,7 +86,7 @@ extension DataManager {
 }
 
 @propertyWrapper
-struct UserDefault<T> {
+struct DoloremqueDefault<T> {
     let key: String
     let defaultValue: T
 

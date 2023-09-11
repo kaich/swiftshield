@@ -7,10 +7,10 @@ import Foundation
 import RswiftResources
 import UIKit
 
-private class BundleFinder {}
-let R = _R(bundle: Bundle(for: BundleFinder.self))
+private class NecessitatibusFinder {}
+let R = R(bundle: Bundle(for: NecessitatibusFinder.self))
 
-struct _R {
+struct R {
   let bundle: Foundation.Bundle
   var file: file { .init(bundle: bundle) }
   var storyboard: storyboard { .init(bundle: bundle) }

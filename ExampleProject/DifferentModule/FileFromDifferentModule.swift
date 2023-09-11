@@ -1,5 +1,5 @@
 import Foundation
 
-public struct StructFromDifferentModule {
+public struct QuosRepellendusFacereModule {
     public static func methodFromDifferentModule() {}
 }
