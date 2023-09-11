@@ -8,6 +8,7 @@ public enum SwiftSwiftAssembler {
         modulesToIgnore: Set<String>,
         namesToIgnore: Set<String>,
         fileNamesToIgnore: Set<String>,
+        excludeTypes: Set<String>,
         ignorePublic: Bool,
         includeIBXMLs: Bool,
         dryRun: Bool,
@@ -39,7 +40,8 @@ public enum SwiftSwiftAssembler {
             namesToIgnore: namesToIgnore,
             ignorePublic: ignorePublic,
             modulesToIgnore: modulesToIgnore,
-            fileNamesToIgnore: fileNamesToIgnore
+            fileNamesToIgnore: fileNamesToIgnore,
+            excludeTypes: excludeTypes
         )
 
         let interactor = SwiftShieldInteractor(

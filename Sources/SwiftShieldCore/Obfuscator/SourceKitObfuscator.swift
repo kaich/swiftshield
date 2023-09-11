@@ -8,9 +8,10 @@ final class SourceKitObfuscator: ObfuscatorProtocol {
     let namesToIgnore: Set<String>
     let modulesToIgnore: Set<String>
     let fileNamesToIgnore: Set<String>
+    let excludeTypes: Set<SourceKit.DeclarationType>
     weak var delegate: ObfuscatorDelegate?
 
-    init(sourceKit: SourceKit, logger: LoggerProtocol, dataStore: SourceKitObfuscatorDataStore, namesToIgnore: Set<String>, ignorePublic: Bool, modulesToIgnore: Set<String>, fileNamesToIgnore: Set<String>) {
+    init(sourceKit: SourceKit, logger: LoggerProtocol, dataStore: SourceKitObfuscatorDataStore, namesToIgnore: Set<String>, ignorePublic: Bool, modulesToIgnore: Set<String>, fileNamesToIgnore: Set<String>, excludeTypes: Set<String>) {
         self.sourceKit = sourceKit
         self.logger = logger
         self.dataStore = dataStore
@@ -18,6 +19,13 @@ final class SourceKitObfuscator: ObfuscatorProtocol {
         self.namesToIgnore = namesToIgnore
         self.modulesToIgnore = modulesToIgnore
         self.fileNamesToIgnore = fileNamesToIgnore
+        var tmpTypes = Set<SourceKit.DeclarationType>()
+        for typeStr in excludeTypes {
+            if let type = SourceKit.DeclarationType(rawValue: typeStr) {
+                tmpTypes.insert(type)
+            }
+        }
+        self.excludeTypes = tmpTypes
     }
 
     var requests: sourcekitd_requests! {
@@ -94,6 +102,11 @@ extension SourceKitObfuscator {
 
         if namesToIgnore.contains(name) {
             logger.log("* Ignoring \(name) (USR: \(usr)) because its included in ignore-names", verbose: true)
+            return
+        }
+        
+        // Skip exclude types
+        if excludeTypes.contains(kind) {
             return
         }
 

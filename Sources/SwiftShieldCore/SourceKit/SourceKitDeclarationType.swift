@@ -1,5 +1,5 @@
 extension SourceKit {
-    enum DeclarationType {
+    enum DeclarationType: String {
         case object
         case `protocol`
         case property
