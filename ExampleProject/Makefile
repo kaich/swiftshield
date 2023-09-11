@@ -2,6 +2,6 @@
 
 swiftshield:
 	cd ../ && make build && make package
-	../.build/apple/Products/Release/_PRODUCT/bin/swiftshield obfuscate -p ./ExampleProject.xcodeproj -s ExampleProject -v -i RswiftResources
+	../.build/release/_PRODUCT/bin/swiftshield obfuscate -p ./ExampleProject.xcodeproj -s ExampleProject -v
 	open ./ExampleProject.xcodeproj
 	open ./swiftshield-output
